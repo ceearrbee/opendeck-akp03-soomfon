@@ -94,7 +94,19 @@ impl openaction::GlobalEventHandler for GlobalEventHandler {
 struct ActionEventHandler {}
 impl openaction::ActionEventHandler for ActionEventHandler {}
 
+use std::fs::OpenOptions;
+use std::io::Write;
+
+pub fn file_log(msg: &str) {
+    let log_path = "opendeck_plugin.log";
+    if let Ok(mut file) = OpenOptions::new().append(true).create(true).open(log_path) {
+        let _ = writeln!(file, "{}", msg);
+        let _ = file.sync_all();
+    }
+}
+
 async fn shutdown() {
+    file_log("Shutdown initiated");
     let tokens = TOKENS.write().await;
 
     for (_, token) in tokens.iter() {
@@ -103,7 +115,9 @@ async fn shutdown() {
 }
 
 async fn connect() {
+    file_log("Connecting to OpenDeck...");
     if let Err(error) = init_plugin(GlobalEventHandler {}, ActionEventHandler {}).await {
+        file_log(&format!("Failed to initialize plugin: {}", error));
         log::error!("Failed to initialize plugin: {}", error);
         exit(1);
     }
@@ -129,6 +143,7 @@ async fn sigterm() -> Result<(), Box<dyn std::error::Error>> {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    file_log("Plugin process started");
     simplelog::TermLogger::init(
         simplelog::LevelFilter::Info,
         simplelog::Config::default(),
@@ -138,8 +153,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     .unwrap();
 
     tokio::select! {
-        _ = connect() => {},
-        _ = sigterm() => {},
+        _ = connect() => {
+            file_log("connect() returned");
+        },
+        _ = sigterm() => {
+            file_log("SIGTERM received");
+        },
     }
 
     log::info!("Shutting down");

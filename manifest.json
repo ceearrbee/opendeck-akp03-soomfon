@@ -1,5 +1,5 @@
 {
-  "Name": "Ajazz AKP03 / Mirabox N3",
+  "Name": "Soomfon SE (Patched)",
   "Description": "Device support plugin for Ajazz AKP03 (+variants)",
   "Author": "Andrey Viktorov",
   "Version": "0.7.5",
@@ -14,6 +14,46 @@
     { "Platform": "mac", "MinimumVersion": "11.3" },
     { "Platform": "windows", "MinimumVersion": "10" }
   ],
-  "Actions": [],
-  "DeviceNamespace": "n3"
+  "Actions": [
+    {
+      "Name": "Knob Test",
+      "UUID": "st.lynx.plugins.opendeck-akp03.knobtest",
+      "Icon": "assets/icon",
+      "States": [
+        {
+          "Image": "assets/icon"
+        }
+      ],
+      "Controllers": ["Encoder"],
+      "Encoder": {
+        "layout": "$X1",
+        "triggerDescription": {
+          "rotate": "Rotate",
+          "push": "Push",
+          "touch": "Touch"
+        }
+      }
+    },
+    {
+      "Name": "Button Test",
+      "UUID": "st.lynx.plugins.opendeck-akp03.buttontest",
+      "Icon": "assets/icon",
+      "States": [
+        {
+          "Image": "assets/icon"
+        }
+      ],
+      "Controllers": ["Keypad"],
+      "SupportedInMultiActions": true
+    }
+    ],
+  "Controllers": ["Keypad", "Encoder"],
+  "DeviceNamespace": "s6",
+  "Device": {
+    "Type": 7,
+    "Size": {
+      "Columns": 3,
+      "Rows": 3
+    }
+  }
 }

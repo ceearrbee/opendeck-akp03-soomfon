@@ -4,7 +4,7 @@ use mirajazz::{
 };
 
 // Must be unique between all the plugins, 2 characters long and match `DeviceNamespace` field in `manifest.json`
-pub const DEVICE_NAMESPACE: &str = "n3";
+pub const DEVICE_NAMESPACE: &str = "s6";
 
 pub const ROW_COUNT: usize = 3;
 pub const COL_COUNT: usize = 3;
@@ -25,6 +25,7 @@ pub enum Kind {
     TreasLinN3,
     RedragonSS551,
 }
+
 
 pub const AJAZZ_VID: u16 = 0x0300;
 pub const MIRABOX_VID: u16 = 0x6603;
@@ -132,7 +133,7 @@ impl Kind {
             Self::Akp03Rrev2 => "Ajazz AKP03R (rev. 2)",
             Self::N3 => "Mirabox N3",
             Self::N3EN => "Mirabox N3EN",
-            Self::SoomfonSE => "Soomfon Stream Controller SE",
+            Self::SoomfonSE => "Soomfon SE (Patched)",
             Self::MSDTWO => "Mars Gaming MSD-TWO",
             Self::TreasLinN3 => "TreasLin N3",
             Self::RedragonSS551 => "Redragon Skyrider SS-551",

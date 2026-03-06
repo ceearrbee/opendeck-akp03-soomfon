@@ -35,6 +35,13 @@ Requires OpenDeck 2.5.0 or newer
 3. Download [udev rules](./40-opendeck-akp03.rules) and install them by copying into `/etc/udev/rules.d/` and running `sudo udevadm control --reload-rules`
 4. Unplug and plug again the device, restart OpenDeck
 
+## Knob mapping
+
+The patched Soomfon SE flow uses the normal OpenDeck `3x3` keypad plus `3` encoder slots.
+
+- Physical keys are positions `0..8`.
+- Knobs are exposed as encoder controls in OpenDeck (no extra virtual button rows).
+
 ## Adding new devices
 
 Read [this wiki page](https://github.com/4ndv/opendeck-akp03/wiki/Adding-support-for-new-devices) for more information.
