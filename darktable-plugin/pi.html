@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Darktable Settings</title>
+    <link rel="stylesheet" href="https://nekename.github.io/OpenDeck/pi.css">
+    <script src="https://nekename.github.io/OpenDeck/pi.js"></script>
+</head>
+<body>
+    <div class="sdpi-wrapper">
+        <div class="sdpi-item">
+            <div class="sdpi-item-label">Slider Path</div>
+            <input class="sdpi-item-value" id="path" placeholder="lib/exposure/exposure">
+        </div>
+        <div class="sdpi-item">
+            <div class="sdpi-item-label">Step Size</div>
+            <input class="sdpi-item-value" id="step" type="number" step="0.01" value="0.1">
+        </div>
+    </div>
+    <script>
+        onSettingsReceived((settings) => {
+            document.getElementById('path').value = settings.path || 'lib/exposure/exposure';
+            document.getElementById('step').value = settings.step || 0.1;
+        });
+
+        document.getElementById('path').addEventListener('change', (e) => {
+            setSettings({ path: e.target.value });
+        });
+        document.getElementById('step').addEventListener('change', (e) => {
+            setSettings({ step: parseFloat(e.target.value) });
+        });
+    </script>
+</body>
+</html>

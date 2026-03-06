@@ -1,0 +1,41 @@
+{
+  "Name": "Darktable Control",
+  "Description": "Control Darktable exposure, contrast, and navigation using knobs and buttons.",
+  "Author": "Gemini CLI",
+  "Version": "0.1.0",
+  "PluginUUID": "st.lynx.plugins.darktable",
+  "CodePathLin": "opendeck-darktable",
+  "Icon": "assets/icon",
+  "Category": "Editing",
+  "OS": [
+    { "Platform": "linux" }
+  ],
+  "Actions": [
+    {
+      "Name": "Darktable Adjust",
+      "UUID": "st.lynx.plugins.darktable.adjust",
+      "Icon": "assets/icon",
+      "States": [{ "Image": "assets/icon" }],
+      "Controllers": ["Keypad", "Encoder"],
+      "Encoder": {
+        "layout": "$X1",
+        "triggerDescription": {
+          "rotate": "Adjust",
+          "push": "Reset",
+          "touch": "Touch"
+        }
+      },
+      "PropertyInspectorPath": "pi.html"
+    },
+    {
+      "Name": "Switch View",
+      "UUID": "st.lynx.plugins.darktable.switchview",
+      "Icon": "assets/icon",
+      "States": [{ "Image": "assets/icon" }],
+      "Controllers": ["Keypad"],
+      "SupportedInMultiActions": true
+    }
+  ],
+  "Controllers": ["Keypad", "Encoder"],
+  "DeviceNamespace": "dt"
+}
