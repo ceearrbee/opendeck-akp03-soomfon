@@ -9,18 +9,18 @@
 <body>
     <div class="sdpi-wrapper">
         <div class="sdpi-item">
-            <div class="sdpi-item-label">Slider Path</div>
-            <input class="sdpi-item-value" id="path" placeholder="lib/exposure/exposure">
+            <div class="sdpi-item-label">Action Path</div>
+            <input class="sdpi-item-value" id="path" placeholder="iop/exposure/exposure">
         </div>
         <div class="sdpi-item">
             <div class="sdpi-item-label">Step Size</div>
-            <input class="sdpi-item-value" id="step" type="number" step="0.01" value="0.1">
+            <input class="sdpi-item-value" id="step" type="number" step="0.1" value="1.0">
         </div>
     </div>
     <script>
         onSettingsReceived((settings) => {
-            document.getElementById('path').value = settings.path || 'lib/exposure/exposure';
-            document.getElementById('step').value = settings.step || 0.1;
+            document.getElementById('path').value = settings.path || 'iop/exposure/exposure';
+            document.getElementById('step').value = settings.step || 1.0;
         });
 
         document.getElementById('path').addEventListener('change', (e) => {

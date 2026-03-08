@@ -1,12 +1,12 @@
 {
   "Name": "Darktable Control",
-  "Description": "Control Darktable exposure, contrast, and navigation using knobs and buttons.",
-  "Author": "Gemini CLI",
-  "Version": "0.1.0",
+  "Description": "Control darktable adjustments and toggles from OpenDeck via Lua DBus bridge.",
+  "Author": "4ndv",
+  "Version": "0.2.0",
   "PluginUUID": "st.lynx.plugins.darktable",
   "CodePathLin": "opendeck-darktable",
   "Icon": "assets/icon",
-  "Category": "Editing",
+  "Category": "Photography",
   "OS": [
     { "Platform": "linux" }
   ],
@@ -20,26 +20,22 @@
       "Encoder": {
         "layout": "$X1",
         "triggerDescription": {
-          "rotate": "Adjust",
-          "push": "Reset",
+          "rotate": "Adjust value",
+          "push": "Reset value",
           "touch": "Touch"
         }
       },
-      "PropertyInspectorPath": "pi.html"
-    },
-    {
-      "Name": "Switch View",
-      "UUID": "st.lynx.plugins.darktable.switchview",
-      "Icon": "assets/icon",
-      "States": [{ "Image": "assets/icon" }],
-      "Controllers": ["Keypad"],
+      "PropertyInspectorPath": "pi.html",
       "SupportedInMultiActions": true
     },
     {
       "Name": "Darktable Toggle",
       "UUID": "st.lynx.plugins.darktable.toggle",
       "Icon": "assets/icon",
-      "States": [{ "Image": "assets/icon" }],
+      "States": [
+        { "Image": "assets/icon" },
+        { "Image": "assets/icon" }
+      ],
       "Controllers": ["Keypad"],
       "PropertyInspectorPath": "pi.html",
       "SupportedInMultiActions": true
