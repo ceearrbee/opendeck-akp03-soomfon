@@ -1,8 +1,7 @@
 use mirajazz::{error::MirajazzError, types::DeviceInput};
 
 pub fn process_input(input: u8, state: u8) -> Result<DeviceInput, MirajazzError> {
-    crate::file_log(&format!("!!! INPUT DETECTED !!! - Code: 0x{:02X}, State: 0x{:02X}", input, state));
-    log::info!("!!! INPUT DETECTED !!! - Code: 0x{:02X}, State: 0x{:02X}", input, state);
+    log::info!("Processing input: {}, {}", input, state);
 
     match input {
         (1..=6) | 0x25 | 0x30 | 0x31 => read_button_press(input, state),
@@ -15,9 +14,9 @@ pub fn process_input(input: u8, state: u8) -> Result<DeviceInput, MirajazzError>
 
 fn read_button_press(input: u8, state: u8) -> Result<DeviceInput, MirajazzError> {
     let index: u8 = match input {
-        // Six buttons with displays
+        // Six buttons with displays (indices 0-5)
         (1..=6) => input - 1,
-        // Three buttons without displays
+        // Three buttons without displays (indices 6-8)
         0x25 => 6,
         0x30 => 7,
         0x31 => 8,
@@ -33,13 +32,13 @@ fn read_button_press(input: u8, state: u8) -> Result<DeviceInput, MirajazzError>
 
 fn read_encoder_value(input: u8) -> Result<DeviceInput, MirajazzError> {
     let (encoder, value): (u8, i8) = match input {
-        // Left encoder (Bottom Left)
+        // Left encoder
         0x90 => (0, -1),
         0x91 => (0, 1),
         // Middle (top) encoder
         0x50 => (1, -1),
         0x51 => (1, 1),
-        // Right encoder (Bottom Right)
+        // Right encoder
         0x60 => (2, -1),
         0x61 => (2, 1),
         _ => return Err(MirajazzError::BadData),
@@ -50,9 +49,9 @@ fn read_encoder_value(input: u8) -> Result<DeviceInput, MirajazzError> {
 
 fn read_encoder_press(input: u8, state: u8) -> Result<DeviceInput, MirajazzError> {
     let encoder: u8 = match input {
-        0x33 => 0, // Left encoder (Bottom Left)
+        0x33 => 0, // Left encoder
         0x35 => 1, // Middle (top) encoder
-        0x34 => 2, // Right encoder (Bottom Right)
+        0x34 => 2, // Right encoder
         _ => return Err(MirajazzError::BadData),
     };
 

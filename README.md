@@ -1,26 +1,16 @@
 ![Plugin Icon](assets/icon.png)
 
-# OpenDeck Ajazz AKP03 / Mirabox N3 Plugin
+# OpenDeck Soomfon SE Plugin
 
-An unofficial plugin for Mirabox N3-family devices
+Hardware plugin for Soomfon Stream Controller SE with OpenDeck events and Linux virtual MIDI output.
 
 ## OpenDeck version
 
 Requires OpenDeck 2.5.0 or newer
 
-## Supported devices
+## Supported device
 
-- Ajazz AKP03 (0300:1001)
-- Ajazz AKP03E (0300:1002)
-- Ajazz AKP03R (0300:1003)
-- Ajazz AKP03E (rev. 2) (0300:3002)
-- Ajazz AKP03R (rev. 2) (0300:3003)
-- Mirabox N3 (6602:1002)
-- Mirabox N3EN (6603:1003)
 - Soomfon Stream Controller SE (1500:3001)
-- Mars Gaming MSD-TWO (0B00:1001)
-- TreasLin N3 (5548:1001)
-- Redragon Skyrider SS-551 (0200:2000)
 
 ## Platform support
 
@@ -35,12 +25,25 @@ Requires OpenDeck 2.5.0 or newer
 3. Download [udev rules](./40-opendeck-akp03.rules) and install them by copying into `/etc/udev/rules.d/` and running `sudo udevadm control --reload-rules`
 4. Unplug and plug again the device, restart OpenDeck
 
-## Knob mapping
+## Control mapping
 
-The patched Soomfon SE flow uses the normal OpenDeck `3x3` keypad plus `3` encoder slots.
+The plugin exposes Soomfon controls as OpenDeck `3x3` keypad + `3` encoders:
 
 - Physical keys are positions `0..8`.
-- Knobs are exposed as encoder controls in OpenDeck (no extra virtual button rows).
+- Encoder press controls are `0..2`.
+- Encoder turns are `0..2`.
+
+## Virtual MIDI output (Linux)
+
+This plugin now also creates a virtual MIDI output port on Linux:
+
+- Port name: `OpenDeck Soomfon SE MIDI`
+- Channel: `1`
+- Buttons `0..8`: MIDI Note `36..44` (Note On/Off)
+- Encoder press `0..2`: MIDI Note `80..82` (Note On/Off)
+- Encoder turn `0..2`: MIDI CC `16..18` (relative mode)
+  - Clockwise: `1..63`
+  - Counter-clockwise: `127..65`
 
 ## Adding new devices
 

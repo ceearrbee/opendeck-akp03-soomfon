@@ -1,7 +1,6 @@
 use image::load_from_memory_with_format;
 use mirajazz::{device::Device, error::MirajazzError};
 use openaction::{OUTBOUND_EVENT_MANAGER, SetImageEvent};
-use serde::Serialize;
 use tokio_util::sync::CancellationToken;
 
 use crate::{
@@ -10,68 +9,46 @@ use crate::{
 };
 
 pub async fn device_task(candidate: CandidateDevice, token: CancellationToken) {
-    crate::file_log(&format!("Starting device task for {}", candidate.id));
+    log::info!("Running device task for {:?}", candidate);
 
-    let device_res = connect(&candidate).await;
+    let device = async || -> Result<Device, MirajazzError> {
+        let device = connect(&candidate).await?;
+        device.set_brightness(50).await?;
+        device.clear_all_button_images().await?;
+        device.flush().await?;
+        Ok(device)
+    }().await;
 
-    let device: Device = match device_res {
-        Ok(device) => {
-            crate::file_log("Connected successfully");
-            device
-        },
+    let device: Device = match device {
+        Ok(device) => device,
         Err(err) => {
-            crate::file_log(&format!("Connection error: {:?}", err));
             handle_error(&candidate.id, err).await;
             return;
         }
     };
 
-    crate::file_log("Initializing device...");
-    if let Err(e) = device.set_brightness(50).await {
-        crate::file_log(&format!("Init error (brightness): {:?}", e));
-    }
-    let _ = device.clear_all_button_images().await;
-    let _ = device.flush().await;
-    crate::file_log("Device initialized");
-
-    crate::file_log(&format!("Registering device {} with OpenDeck", candidate.id));
+    log::info!("Registering device {} with OpenDeck", candidate.id);
     if let Some(outbound) = OUTBOUND_EVENT_MANAGER.lock().await.as_mut() {
-        let res_legacy = outbound
+        let res = outbound
             .register_device(
                 candidate.id.clone(),
                 candidate.kind.human_name(),
                 ROW_COUNT as u8,
                 COL_COUNT as u8,
                 ENCODER_COUNT as u8,
-                7, // Stream Deck+ class in OpenDeck
+                7, // Type 7 = Stream Deck+ (Enables Encoders in UI)
             )
             .await;
 
-        if let Err(e) = &res_legacy {
-            crate::file_log(&format!("Legacy registration failed: {:?}", e));
-        } else {
-            crate::file_log("Legacy registration sent");
-        }
-
-        let res = outbound
-            .send_event(RegisterDeviceEvent {
-                event: "registerDevice",
-                payload: RegisterDevicePayload {
-                    id: candidate.id.clone(),
-                    name: candidate.kind.human_name(),
-                    rows: ROW_COUNT as u8,
-                    columns: COL_COUNT as u8,
-                    encoders: ENCODER_COUNT as u8,
-                    touchpoints: 0,
-                    r#type: 7, // Stream Deck+ class in OpenDeck
-                },
-            })
-            .await;
-
-        
         match res {
-            Ok(_) => crate::file_log("Extended registration sent"),
-            Err(e) => crate::file_log(&format!("Extended registration failed: {:?}", e)),
+            Ok(_) => {
+                crate::file_log("REGISTRATION SUCCESS (Type 7)");
+                log::info!("Registration successful (Type 7)");
+            }
+            Err(e) => {
+                crate::file_log(&format!("REGISTRATION FAILED: {:?}", e));
+                log::error!("Registration failed: {:?}", e);
+            }
         }
     }
 
@@ -82,23 +59,6 @@ pub async fn device_task(candidate: CandidateDevice, token: CancellationToken) {
     if let Some(device) = DEVICES.read().await.get(&candidate.id) {
         let _ = device.shutdown().await;
     }
-}
-
-#[derive(Serialize)]
-struct RegisterDeviceEvent {
-    event: &'static str,
-    payload: RegisterDevicePayload,
-}
-
-#[derive(Serialize)]
-struct RegisterDevicePayload {
-    id: String,
-    name: String,
-    rows: u8,
-    columns: u8,
-    encoders: u8,
-    touchpoints: u8,
-    r#type: u8,
 }
 
 pub async fn handle_error(id: &String, err: MirajazzError) -> bool {
@@ -118,7 +78,7 @@ pub async fn handle_error(id: &String, err: MirajazzError) -> bool {
 pub async fn connect(candidate: &CandidateDevice) -> Result<Device, MirajazzError> {
     Device::connect(
         &candidate.dev,
-        3,
+        candidate.kind.protocol_version(),
         KEY_COUNT,
         ENCODER_COUNT,
     )
@@ -126,7 +86,6 @@ pub async fn connect(candidate: &CandidateDevice) -> Result<Device, MirajazzErro
 }
 
 async fn device_events_task(candidate: &CandidateDevice, token: CancellationToken) -> Result<(), MirajazzError> {
-    crate::file_log("Starting event loop...");
     let devices_lock = DEVICES.read().await;
     let reader = match devices_lock.get(&candidate.id) {
         Some(device) => device.get_reader(crate::inputs::process_input),
@@ -134,71 +93,43 @@ async fn device_events_task(candidate: &CandidateDevice, token: CancellationToke
     };
     drop(devices_lock);
 
-    let mut keep_alive_ticker = tokio::time::interval(tokio::time::Duration::from_secs(5));
-
     loop {
         let updates = tokio::select! {
-            _ = token.cancelled() => {
-                crate::file_log("Token cancelled");
-                break;
-            }
-            _ = keep_alive_ticker.tick() => {
-                if let Some(device) = DEVICES.read().await.get(&candidate.id) {
-                    let _ = device.keep_alive().await;
-                }
-                continue;
-            }
-            res = reader.read(None) => {
-                match res {
-                    Ok(updates) => updates,
-                    Err(e) => {
-                        crate::file_log(&format!("Reader error: {:?}", e));
-                        if !handle_error(&candidate.id, e).await { break; }
-                        continue;
-                    }
+            _ = token.cancelled() => break,
+            res = reader.read(None) => match res {
+                Ok(updates) => updates,
+                Err(e) => {
+                    if !handle_error(&candidate.id, e).await { break; }
+                    continue;
                 }
             }
         };
 
         for update in updates {
-            crate::file_log(&format!("UPDATE: {:?}", update));
+            log::info!("New update: {:?}", update);
             let id = candidate.id.clone();
             if let Some(outbound) = OUTBOUND_EVENT_MANAGER.lock().await.as_mut() {
                 use mirajazz::state::DeviceStateUpdate;
                 match update {
-                    DeviceStateUpdate::ButtonDown(key) => { let _ = outbound.key_down(id, key).await; }
-                    DeviceStateUpdate::ButtonUp(key) => { let _ = outbound.key_up(id, key).await; }
-                    DeviceStateUpdate::EncoderDown(encoder) => { let _ = outbound.encoder_down(id, encoder).await; }
-                    DeviceStateUpdate::EncoderUp(encoder) => { let _ = outbound.encoder_up(id, encoder).await; }
+                    DeviceStateUpdate::ButtonDown(key) => {
+                        let _ = outbound.key_down(id, key).await;
+                        crate::midi::button_down(key).await;
+                    }
+                    DeviceStateUpdate::ButtonUp(key) => {
+                        let _ = outbound.key_up(id, key).await;
+                        crate::midi::button_up(key).await;
+                    }
+                    DeviceStateUpdate::EncoderDown(encoder) => {
+                        let _ = outbound.encoder_down(id, encoder).await;
+                        crate::midi::encoder_down(encoder).await;
+                    }
+                    DeviceStateUpdate::EncoderUp(encoder) => {
+                        let _ = outbound.encoder_up(id, encoder).await;
+                        crate::midi::encoder_up(encoder).await;
+                    }
                     DeviceStateUpdate::EncoderTwist(encoder, val) => {
-                        let ticks = val as i16;
-                        // Super-payload to cover all bases for rotation
-                        let _ = outbound.send_event(serde_json::json!({
-                            "event": "dialRotate",
-                            "payload": {
-                                "device": id,
-                                "encoder": encoder,
-                                "position": encoder,
-                                "column": encoder,
-                                "row": 0,
-                                "ticks": ticks,
-                                "value": ticks,
-                                "delta": ticks,
-                                "pressed": false
-                            }
-                        })).await;
-
-                        // Also send encoderChange (OpenAction default) with multiple field names
-                        let _ = outbound.send_event(serde_json::json!({
-                            "event": "encoderChange",
-                            "payload": {
-                                "device": id.clone(),
-                                "position": encoder,
-                                "ticks": ticks,
-                                "value": ticks,
-                                "delta": ticks
-                            }
-                        })).await;
+                        let _ = outbound.encoder_change(id, encoder, val as i16).await;
+                        crate::midi::encoder_twist(encoder, val as i16).await;
                     }
                 }
             }

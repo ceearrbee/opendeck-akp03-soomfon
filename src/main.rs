@@ -12,6 +12,7 @@ use tokio::signal::unix::{SignalKind, signal};
 mod device;
 mod inputs;
 mod mappings;
+mod midi;
 mod watcher;
 
 pub static DEVICES: LazyLock<RwLock<HashMap<String, Device>>> =
@@ -20,24 +21,22 @@ pub static TOKENS: LazyLock<RwLock<HashMap<String, CancellationToken>>> =
     LazyLock::new(|| RwLock::new(HashMap::new()));
 pub static TRACKER: LazyLock<Mutex<TaskTracker>> = LazyLock::new(|| Mutex::new(TaskTracker::new()));
 
+pub fn file_log(msg: &str) {
+    log::info!("{}", msg);
+}
+
 struct GlobalEventHandler {}
 impl openaction::GlobalEventHandler for GlobalEventHandler {
     async fn plugin_ready(
         &self,
         _outbound: &mut openaction::OutboundEventManager,
     ) -> EventHandlerResult {
+        midi::init().await;
         let tracker = TRACKER.lock().await.clone();
-
         let token = CancellationToken::new();
         tracker.spawn(watcher_task(token.clone()));
-
-        TOKENS
-            .write()
-            .await
-            .insert("_watcher_task".to_string(), token);
-
+        TOKENS.write().await.insert("_watcher_task".to_string(), token);
         log::info!("Plugin initialized");
-
         Ok(())
     }
 
@@ -46,25 +45,14 @@ impl openaction::GlobalEventHandler for GlobalEventHandler {
         event: SetImageEvent,
         _outbound: &mut OutboundEventManager,
     ) -> EventHandlerResult {
-        log::debug!("Asked to set image: {:#?}", event);
-
-        // Skip knobs images
-        if event.controller == Some("Encoder".to_string()) {
-            log::debug!("Looks like a knob, no need to set image");
-            return Ok(());
-        }
-
+        if event.controller == Some("Encoder".to_string()) { return Ok(()); }
         let id = event.device.clone();
-
         if let Some(device) = DEVICES.read().await.get(&event.device) {
             handle_set_image(device, event)
                 .await
                 .map_err(async |err| handle_error(&id, err).await)
                 .ok();
-        } else {
-            log::error!("Received event for unknown device: {}", event.device);
         }
-
         Ok(())
     }
 
@@ -73,20 +61,12 @@ impl openaction::GlobalEventHandler for GlobalEventHandler {
         event: SetBrightnessEvent,
         _outbound: &mut OutboundEventManager,
     ) -> EventHandlerResult {
-        log::debug!("Asked to set brightness: {:#?}", event);
-
         let id = event.device.clone();
-
         if let Some(device) = DEVICES.read().await.get(&event.device) {
-            device
-                .set_brightness(event.brightness)
-                .await
+            device.set_brightness(event.brightness).await
                 .map_err(async |err| handle_error(&id, err).await)
                 .ok();
-        } else {
-            log::error!("Received event for unknown device: {}", event.device);
         }
-
         Ok(())
     }
 }
@@ -94,30 +74,13 @@ impl openaction::GlobalEventHandler for GlobalEventHandler {
 struct ActionEventHandler {}
 impl openaction::ActionEventHandler for ActionEventHandler {}
 
-use std::fs::OpenOptions;
-use std::io::Write;
-
-pub fn file_log(msg: &str) {
-    let log_path = "opendeck_plugin.log";
-    if let Ok(mut file) = OpenOptions::new().append(true).create(true).open(log_path) {
-        let _ = writeln!(file, "{}", msg);
-        let _ = file.sync_all();
-    }
-}
-
 async fn shutdown() {
-    file_log("Shutdown initiated");
     let tokens = TOKENS.write().await;
-
-    for (_, token) in tokens.iter() {
-        token.cancel();
-    }
+    for (_, token) in tokens.iter() { token.cancel(); }
 }
 
 async fn connect() {
-    file_log("Connecting to OpenDeck...");
     if let Err(error) = init_plugin(GlobalEventHandler {}, ActionEventHandler {}).await {
-        file_log(&format!("Failed to initialize plugin: {}", error));
         log::error!("Failed to initialize plugin: {}", error);
         exit(1);
     }
@@ -126,53 +89,32 @@ async fn connect() {
 #[cfg(any(target_os = "linux", target_os = "macos"))]
 async fn sigterm() -> Result<(), Box<dyn std::error::Error>> {
     let mut sig = signal(SignalKind::terminate())?;
-
     sig.recv().await;
-
     Ok(())
 }
 
 #[cfg(target_os = "windows")]
 async fn sigterm() -> Result<(), Box<dyn std::error::Error>> {
-    // Future that would never resolve, so select only acts on OpenDeck connection loss
-    // TODO: Proper windows termination handling
     std::future::pending::<()>().await;
-
     Ok(())
 }
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    file_log("Plugin process started");
     simplelog::TermLogger::init(
         simplelog::LevelFilter::Info,
         simplelog::Config::default(),
         simplelog::TerminalMode::Stdout,
         simplelog::ColorChoice::Never,
-    )
-    .unwrap();
+    ).ok();
 
     tokio::select! {
-        _ = connect() => {
-            file_log("connect() returned");
-        },
-        _ = sigterm() => {
-            file_log("SIGTERM received");
-        },
+        _ = connect() => {},
+        _ = sigterm() => {},
     }
-
-    log::info!("Shutting down");
-
     shutdown().await;
-
     let tracker = TRACKER.lock().await.clone();
-
-    log::info!("Waiting for tasks to finish");
-
     tracker.close();
     tracker.wait().await;
-
-    log::info!("Tasks are finished, exiting now");
-
     Ok(())
 }

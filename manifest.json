@@ -1,18 +1,16 @@
 {
-  "Name": "Soomfon SE (Patched)",
-  "Description": "Device support plugin for Ajazz AKP03 (+variants)",
-  "Author": "Andrey Viktorov",
-  "Version": "0.7.5",
+  "Name": "Soomfon SE",
+  "Description": "Hardware plugin for Soomfon Stream Controller SE.",
+  "Author": "OpenDeck",
+  "Version": "0.7.51",
   "PluginUUID": "st.lynx.plugins.opendeck-akp03",
   "CodePathLin": "opendeck-akp03-linux",
-  "CodePathMac": "opendeck-akp03-mac",
-  "CodePathWin": "opendeck-akp03-win.exe",
   "Icon": "assets/icon",
   "Category": "Hardware",
   "OS": [
-    { "Platform": "linux" },
-    { "Platform": "mac", "MinimumVersion": "11.3" },
-    { "Platform": "windows", "MinimumVersion": "10" }
+    {
+      "Platform": "linux"
+    }
   ],
   "Actions": [
     {
@@ -24,7 +22,9 @@
           "Image": "assets/icon"
         }
       ],
-      "Controllers": ["Encoder"],
+      "Controllers": [
+        "Encoder"
+      ],
       "Encoder": {
         "layout": "$X1",
         "triggerDescription": {
@@ -43,11 +43,16 @@
           "Image": "assets/icon"
         }
       ],
-      "Controllers": ["Keypad"],
+      "Controllers": [
+        "Keypad"
+      ],
       "SupportedInMultiActions": true
     }
-    ],
-  "Controllers": ["Keypad", "Encoder"],
+  ],
+  "Controllers": [
+    "Keypad",
+    "Encoder"
+  ],
   "DeviceNamespace": "s6",
   "Device": {
     "Type": 7,
