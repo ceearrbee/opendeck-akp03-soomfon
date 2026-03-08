@@ -2,7 +2,12 @@ id := "st.lynx.plugins.opendeck-akp03.sdPlugin"
 
 release: bump package tag
 
+check:
+    ./release-check.sh
+
 package: build-linux build-mac build-win collect zip
+
+package-linux: build-linux collect-linux zip-linux
 
 bump next=`git cliff --bumped-version | tr -d "v"`:
     git diff --cached --exit-code
@@ -45,6 +50,17 @@ collect:
     cp target/plugin-mac/universal2-apple-darwin/release/opendeck-akp03 build/{{id}}/opendeck-akp03-mac
     cp target/plugin-win/x86_64-pc-windows-gnu/release/opendeck-akp03.exe build/{{id}}/opendeck-akp03-win.exe
 
+collect-linux:
+    rm -rf build
+    mkdir -p build/{{id}}
+    cp -r assets build/{{id}}
+    cp manifest.json build/{{id}}
+    cp target/plugin-linux/x86_64-unknown-linux-gnu/release/opendeck-akp03 build/{{id}}/opendeck-akp03-linux
+
 [working-directory: "build"]
 zip:
     zip -r opendeck-akp03.plugin.zip {{id}}/
+
+[working-directory: "build"]
+zip-linux:
+    zip -r opendeck-akp03-linux.plugin.zip {{id}}/

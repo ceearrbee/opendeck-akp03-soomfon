@@ -2,92 +2,89 @@
 
 # OpenDeck Soomfon SE Plugin
 
-Hardware plugin for Soomfon Stream Controller SE with OpenDeck events and Linux virtual MIDI output.
+Hardware plugin for Soomfon Stream Controller SE (`1500:3001`) with OpenDeck device events and optional Linux virtual MIDI output.
 
-## OpenDeck version
+## Support Matrix
 
-Requires OpenDeck 2.5.0 or newer
+- Platform: Linux
+- OpenDeck: 2.5.0+
+- Device: Soomfon Stream Controller SE (`1500:3001`)
 
-## Supported device
-
-- Soomfon Stream Controller SE (1500:3001)
-
-## Platform support
-
-- Linux: Guaranteed, if stuff breaks - I'll probably catch it before public release
-- Mac: Best effort, no tests before release, things may break, but I probably have means to fix them
-- Windows: Zero effort, no tests before release, if stuff breaks - too bad, it's up to you to contribute fixes
+This release does not target Windows or macOS.
 
 ## Installation
 
-1. Download an archive from [releases](https://github.com/4ndv/opendeck-akp03/releases)
-2. In OpenDeck: Plugins -> Install from file
-3. Download [udev rules](./40-opendeck-akp03.rules) and install them by copying into `/etc/udev/rules.d/` and running `sudo udevadm control --reload-rules`
-4. Unplug and plug again the device, restart OpenDeck
+1. Download plugin archive from releases.
+2. In OpenDeck: `Plugins -> Install from file`.
+3. Install udev rules from [`40-opendeck-akp03.rules`](./40-opendeck-akp03.rules):
+   ```sh
+   sudo cp 40-opendeck-akp03.rules /etc/udev/rules.d/
+   sudo udevadm control --reload-rules
+   ```
+4. Replug device and restart OpenDeck.
 
-## Control mapping
+## Control Mapping
 
-The plugin exposes Soomfon controls as OpenDeck `3x3` keypad + `3` encoders:
+Exposed as OpenDeck `3x3` keypad + `3` encoders:
 
-- Physical keys are positions `0..8`.
-- Encoder press controls are `0..2`.
-- Encoder turns are `0..2`.
+- Keys: `0..8`
+- Encoder press: `0..2`
+- Encoder rotate: `0..2`
 
-## Virtual MIDI output (Linux)
+## MIDI Bridge (Linux, Optional)
 
-This plugin now also creates a virtual MIDI output port on Linux:
+MIDI bridge is disabled by default.
 
-- Port name: `OpenDeck Soomfon SE MIDI`
+Enable explicitly:
+
+```sh
+OPENDECK_ENABLE_MIDI=1 flatpak run me.amankhanna.opendeck
+```
+
+Behavior when enabled:
+
+- Port: `OpenDeck Soomfon SE MIDI`
 - Channel: `1`
-- Buttons `0..8`: MIDI Note `36..44` (Note On/Off)
-- Encoder press `0..2`: MIDI Note `80..82` (Note On/Off)
-- Encoder turn `0..2`: MIDI CC `16..18` (relative mode)
-  - Clockwise: `1..63`
-  - Counter-clockwise: `127..65`
+- Buttons `0..8` -> Notes `36..44` (on/off)
+- Encoder press `0..2` -> Notes `80..82` (on/off)
+- Encoder rotate `0..2` -> CC `16..18` (relative)
 
-## Adding new devices
+## Included Actions
 
-Read [this wiki page](https://github.com/4ndv/opendeck-akp03/wiki/Adding-support-for-new-devices) for more information.
+- `Button Test` (`st.lynx.plugins.opendeck-akp03.buttontest`)
+- `Knob Test` (`st.lynx.plugins.opendeck-akp03.knobtest`)
 
-## Building
+These are intentionally visible for hardware diagnostics.
 
-### Prerequisites
+## Troubleshooting
 
-You'll need:
+OpenDeck logs:
 
-- A Linux OS of some sort
-- Rust 1.87 and up with `x86_64-unknown-linux-gnu` and `x86_64-pc-windows-gnu` targets installed
-- gcc with Windows support
-- Docker
-- [just](https://just.systems)
+- `~/.var/app/me.amankhanna.opendeck/data/opendeck/logs/opendeck.log`
+- `~/.var/app/me.amankhanna.opendeck/data/opendeck/logs/plugins/st.lynx.plugins.opendeck-akp03.sdPlugin.log`
 
-On Arch Linux:
+Common issues:
 
-```sh
-sudo pacman -S just mingw-w64-gcc mingw-w64-binutils
-```
+- Device not discovered: confirm udev rules and replug.
+- No MIDI output: verify `OPENDECK_ENABLE_MIDI=1` is set.
+- Input events missing: check plugin log for registration/device lifecycle errors.
 
-Adding rust targets:
+## Build and Release
+
+Build:
 
 ```sh
-rustup target add x86_64-pc-windows-gnu
-rustup target add x86_64-unknown-linux-gnu
+cargo build --release
 ```
 
-### Preparing environment
+Run release checks:
 
 ```sh
-$ just prepare
+./release-check.sh
 ```
 
-This will build docker image for macOS crosscompilation
-
-### Building a release package
+Package plugin (Linux artifact):
 
 ```sh
-$ just package
+just package-linux
 ```
-
-## Acknowledgments
-
-This plugin is heavily based on work by contributors of [elgato-streamdeck](https://github.com/streamduck-org/elgato-streamdeck) crate

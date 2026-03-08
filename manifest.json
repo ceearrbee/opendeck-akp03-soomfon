@@ -1,8 +1,8 @@
 {
   "Name": "Soomfon SE",
-  "Description": "Hardware plugin for Soomfon Stream Controller SE.",
+  "Description": "Hardware plugin for Soomfon Stream Controller SE with optional Linux virtual MIDI output.",
   "Author": "OpenDeck",
-  "Version": "0.7.51",
+  "Version": "0.8.0",
   "PluginUUID": "st.lynx.plugins.opendeck-akp03",
   "CodePathLin": "opendeck-akp03-linux",
   "Icon": "assets/icon",

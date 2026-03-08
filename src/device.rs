@@ -22,6 +22,7 @@ pub async fn device_task(candidate: CandidateDevice, token: CancellationToken) {
     let device: Device = match device {
         Ok(device) => device,
         Err(err) => {
+            log::error!("Failed to initialize device {}: {}", candidate.id, err);
             handle_error(&candidate.id, err).await;
             return;
         }
@@ -63,8 +64,10 @@ pub async fn device_task(candidate: CandidateDevice, token: CancellationToken) {
 
 pub async fn handle_error(id: &String, err: MirajazzError) -> bool {
     if matches!(err, MirajazzError::ImageError(_) | MirajazzError::BadData) {
+        log::debug!("Recoverable error for {}: {}", id, err);
         return true;
     }
+    log::error!("Fatal device error for {}: {}", id, err);
     if let Some(outbound) = OUTBOUND_EVENT_MANAGER.lock().await.as_mut() {
         let _ = outbound.deregister_device(id.clone()).await;
     }
@@ -106,7 +109,7 @@ async fn device_events_task(candidate: &CandidateDevice, token: CancellationToke
         };
 
         for update in updates {
-            log::info!("New update: {:?}", update);
+            log::debug!("Device update: {:?}", update);
             let id = candidate.id.clone();
             if let Some(outbound) = OUTBOUND_EVENT_MANAGER.lock().await.as_mut() {
                 use mirajazz::state::DeviceStateUpdate;
@@ -143,11 +146,12 @@ pub async fn handle_set_image(device: &Device, evt: SetImageEvent) -> Result<(),
         if let Some(key) = evt.position { device.clear_button_image(key as u8).await?; }
         else { device.clear_all_button_images().await?; }
     } else {
-        let image = evt.image.unwrap();
-        let key = evt.position.unwrap();
-        let data = data_url::DataUrl::process(&image).unwrap();
-        let (body, _) = data.decode_to_vec().unwrap();
-        let img = load_from_memory_with_format(&body, image::ImageFormat::Jpeg).unwrap();
+        let image = evt.image.ok_or(MirajazzError::BadData)?;
+        let key = evt.position.ok_or(MirajazzError::BadData)?;
+        let data = data_url::DataUrl::process(&image).map_err(|_| MirajazzError::BadData)?;
+        let (body, _) = data.decode_to_vec().map_err(|_| MirajazzError::BadData)?;
+        let img = load_from_memory_with_format(&body, image::ImageFormat::Jpeg)
+            .map_err(|_| MirajazzError::BadData)?;
         device.set_button_image(key as u8, mirajazz::types::ImageFormat {
             mode: mirajazz::types::ImageMode::JPEG,
             size: (60, 60),

@@ -5,6 +5,7 @@ use std::{collections::HashMap, process::exit, sync::LazyLock};
 use tokio::sync::{Mutex, RwLock};
 use tokio_util::{sync::CancellationToken, task::TaskTracker};
 use watcher::watcher_task;
+use crate::mappings::{COL_COUNT, DEVICE_NAMESPACE, ENCODER_COUNT, KEY_COUNT, ROW_COUNT};
 
 #[cfg(not(target_os = "windows"))]
 use tokio::signal::unix::{SignalKind, signal};
@@ -31,12 +32,21 @@ impl openaction::GlobalEventHandler for GlobalEventHandler {
         &self,
         _outbound: &mut openaction::OutboundEventManager,
     ) -> EventHandlerResult {
+        log::info!(
+            "Hardware plugin preflight: namespace={} keys={} rows={} cols={} encoders={}",
+            DEVICE_NAMESPACE, KEY_COUNT, ROW_COUNT, COL_COUNT, ENCODER_COUNT
+        );
         midi::init().await;
         let tracker = TRACKER.lock().await.clone();
         let token = CancellationToken::new();
-        tracker.spawn(watcher_task(token.clone()));
+        let watcher_token = token.clone();
+        tracker.spawn(async move {
+            if let Err(err) = watcher_task(watcher_token).await {
+                log::error!("Watcher task stopped with error: {}", err);
+            }
+        });
         TOKENS.write().await.insert("_watcher_task".to_string(), token);
-        log::info!("Plugin initialized");
+        log::info!("Hardware watcher task started");
         Ok(())
     }
 
@@ -48,10 +58,10 @@ impl openaction::GlobalEventHandler for GlobalEventHandler {
         if event.controller == Some("Encoder".to_string()) { return Ok(()); }
         let id = event.device.clone();
         if let Some(device) = DEVICES.read().await.get(&event.device) {
-            handle_set_image(device, event)
-                .await
-                .map_err(async |err| handle_error(&id, err).await)
-                .ok();
+            if let Err(err) = handle_set_image(device, event).await {
+                log::error!("set_image failed for device {}: {}", id, err);
+                let _ = handle_error(&id, err).await;
+            }
         }
         Ok(())
     }
@@ -63,9 +73,13 @@ impl openaction::GlobalEventHandler for GlobalEventHandler {
     ) -> EventHandlerResult {
         let id = event.device.clone();
         if let Some(device) = DEVICES.read().await.get(&event.device) {
-            device.set_brightness(event.brightness).await
-                .map_err(async |err| handle_error(&id, err).await)
-                .ok();
+            if let Err(err) = device.set_brightness(event.brightness).await {
+                log::error!(
+                    "set_brightness failed for device {} brightness={}: {}",
+                    id, event.brightness, err
+                );
+                let _ = handle_error(&id, err).await;
+            }
         }
         Ok(())
     }
@@ -81,7 +95,7 @@ async fn shutdown() {
 
 async fn connect() {
     if let Err(error) = init_plugin(GlobalEventHandler {}, ActionEventHandler {}).await {
-        log::error!("Failed to initialize plugin: {}", error);
+        log::error!("Failed to initialize hardware plugin websocket session: {}", error);
         exit(1);
     }
 }

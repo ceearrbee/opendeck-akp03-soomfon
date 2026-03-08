@@ -1,7 +1,7 @@
 use mirajazz::{error::MirajazzError, types::DeviceInput};
 
 pub fn process_input(input: u8, state: u8) -> Result<DeviceInput, MirajazzError> {
-    log::info!("Processing input: {}, {}", input, state);
+    log::debug!("Processing input: {}, {}", input, state);
 
     match input {
         (1..=6) | 0x25 | 0x30 | 0x31 => read_button_press(input, state),
