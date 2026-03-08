@@ -34,6 +34,15 @@
       "States": [{ "Image": "assets/icon" }],
       "Controllers": ["Keypad"],
       "SupportedInMultiActions": true
+    },
+    {
+      "Name": "Darktable Toggle",
+      "UUID": "st.lynx.plugins.darktable.toggle",
+      "Icon": "assets/icon",
+      "States": [{ "Image": "assets/icon" }],
+      "Controllers": ["Keypad"],
+      "PropertyInspectorPath": "pi.html",
+      "SupportedInMultiActions": true
     }
   ],
   "Controllers": ["Keypad", "Encoder"],

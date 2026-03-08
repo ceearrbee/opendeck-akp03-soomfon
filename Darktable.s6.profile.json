@@ -7,9 +7,9 @@
         ],
         "disable_automatic_states": false,
         "icon": "plugins/st.lynx.plugins.darktable.sdPlugin/assets/icon.png",
-        "name": "Switch View",
+        "name": "Darktable Toggle",
         "plugin": "st.lynx.plugins.darktable.sdPlugin",
-        "property_inspector": "",
+        "property_inspector": "plugins/st.lynx.plugins.darktable.sdPlugin/pi.html",
         "states": [
           {
             "alignment": "middle",
@@ -29,70 +29,14 @@
         ],
         "supported_in_multi_actions": true,
         "tooltip": "",
-        "uuid": "st.lynx.plugins.darktable.switchview",
+        "uuid": "st.lynx.plugins.darktable.toggle",
         "visible_in_action_list": true
       },
       "children": null,
       "context": "Keypad.0.0",
       "current_state": 0,
-      "settings": {},
-      "states": [
-        {
-          "alignment": "middle",
-          "background_colour": "#000000",
-          "colour": "#FFFFFF",
-          "family": "Liberation Sans",
-          "image": "plugins/st.lynx.plugins.darktable.sdPlugin/assets/icon.png",
-          "name": "",
-          "show": true,
-          "size": 16,
-          "stroke_colour": "#000000",
-          "stroke_size": 3,
-          "style": "Regular",
-          "text": "VIEW",
-          "underline": false
-        }
-      ]
-    },
-    {
-      "action": {
-        "controllers": [
-          "Keypad",
-          "Encoder"
-        ],
-        "disable_automatic_states": false,
-        "icon": "plugins/st.lynx.plugins.darktable.sdPlugin/assets/icon.png",
-        "name": "Darktable Adjust",
-        "plugin": "st.lynx.plugins.darktable.sdPlugin",
-        "property_inspector": "plugins/st.lynx.plugins.darktable.sdPlugin/pi.html",
-        "states": [
-          {
-            "alignment": "middle",
-            "background_colour": "#000000",
-            "colour": "#FFFFFF",
-            "family": "Liberation Sans",
-            "image": "plugins/st.lynx.plugins.darktable.sdPlugin/assets/icon.png",
-            "name": "",
-            "show": true,
-            "size": 16,
-            "stroke_colour": "#000000",
-            "stroke_size": 3,
-            "style": "Regular",
-            "text": "",
-            "underline": false
-          }
-        ],
-        "supported_in_multi_actions": true,
-        "tooltip": "",
-        "uuid": "st.lynx.plugins.darktable.adjust",
-        "visible_in_action_list": true
-      },
-      "children": null,
-      "context": "Keypad.1.0",
-      "current_state": 0,
       "settings": {
-        "path": "iop/exposure/exposure",
-        "step": 1.0
+        "path": "global/fullscreen"
       },
       "states": [
         {
@@ -107,352 +51,7 @@
           "stroke_colour": "#000000",
           "stroke_size": 3,
           "style": "Regular",
-          "text": "EXP+",
-          "underline": false
-        }
-      ]
-    },
-    {
-      "action": {
-        "controllers": [
-          "Keypad",
-          "Encoder"
-        ],
-        "disable_automatic_states": false,
-        "icon": "plugins/st.lynx.plugins.darktable.sdPlugin/assets/icon.png",
-        "name": "Darktable Adjust",
-        "plugin": "st.lynx.plugins.darktable.sdPlugin",
-        "property_inspector": "plugins/st.lynx.plugins.darktable.sdPlugin/pi.html",
-        "states": [
-          {
-            "alignment": "middle",
-            "background_colour": "#000000",
-            "colour": "#FFFFFF",
-            "family": "Liberation Sans",
-            "image": "plugins/st.lynx.plugins.darktable.sdPlugin/assets/icon.png",
-            "name": "",
-            "show": true,
-            "size": 16,
-            "stroke_colour": "#000000",
-            "stroke_size": 3,
-            "style": "Regular",
-            "text": "",
-            "underline": false
-          }
-        ],
-        "supported_in_multi_actions": true,
-        "tooltip": "",
-        "uuid": "st.lynx.plugins.darktable.adjust",
-        "visible_in_action_list": true
-      },
-      "children": null,
-      "context": "Keypad.2.0",
-      "current_state": 0,
-      "settings": {
-        "path": "iop/filmicrgb/contrast",
-        "step": 1.0
-      },
-      "states": [
-        {
-          "alignment": "middle",
-          "background_colour": "#000000",
-          "colour": "#FFFFFF",
-          "family": "Liberation Sans",
-          "image": "plugins/st.lynx.plugins.darktable.sdPlugin/assets/icon.png",
-          "name": "",
-          "show": true,
-          "size": 16,
-          "stroke_colour": "#000000",
-          "stroke_size": 3,
-          "style": "Regular",
-          "text": "CON+",
-          "underline": false
-        }
-      ]
-    },
-    {
-      "action": {
-        "controllers": [
-          "Keypad",
-          "Encoder"
-        ],
-        "disable_automatic_states": false,
-        "icon": "plugins/st.lynx.plugins.darktable.sdPlugin/assets/icon.png",
-        "name": "Darktable Adjust",
-        "plugin": "st.lynx.plugins.darktable.sdPlugin",
-        "property_inspector": "plugins/st.lynx.plugins.darktable.sdPlugin/pi.html",
-        "states": [
-          {
-            "alignment": "middle",
-            "background_colour": "#000000",
-            "colour": "#FFFFFF",
-            "family": "Liberation Sans",
-            "image": "plugins/st.lynx.plugins.darktable.sdPlugin/assets/icon.png",
-            "name": "",
-            "show": true,
-            "size": 16,
-            "stroke_colour": "#000000",
-            "stroke_size": 3,
-            "style": "Regular",
-            "text": "",
-            "underline": false
-          }
-        ],
-        "supported_in_multi_actions": true,
-        "tooltip": "",
-        "uuid": "st.lynx.plugins.darktable.adjust",
-        "visible_in_action_list": true
-      },
-      "children": null,
-      "context": "Keypad.3.0",
-      "current_state": 0,
-      "settings": {
-        "path": "iop/ashift/rotation",
-        "step": 1.0
-      },
-      "states": [
-        {
-          "alignment": "middle",
-          "background_colour": "#000000",
-          "colour": "#FFFFFF",
-          "family": "Liberation Sans",
-          "image": "plugins/st.lynx.plugins.darktable.sdPlugin/assets/icon.png",
-          "name": "",
-          "show": true,
-          "size": 16,
-          "stroke_colour": "#000000",
-          "stroke_size": 3,
-          "style": "Regular",
-          "text": "ROT+",
-          "underline": false
-        }
-      ]
-    },
-    {
-      "action": {
-        "controllers": [
-          "Keypad",
-          "Encoder"
-        ],
-        "disable_automatic_states": false,
-        "icon": "plugins/st.lynx.plugins.darktable.sdPlugin/assets/icon.png",
-        "name": "Darktable Adjust",
-        "plugin": "st.lynx.plugins.darktable.sdPlugin",
-        "property_inspector": "plugins/st.lynx.plugins.darktable.sdPlugin/pi.html",
-        "states": [
-          {
-            "alignment": "middle",
-            "background_colour": "#000000",
-            "colour": "#FFFFFF",
-            "family": "Liberation Sans",
-            "image": "plugins/st.lynx.plugins.darktable.sdPlugin/assets/icon.png",
-            "name": "",
-            "show": true,
-            "size": 16,
-            "stroke_colour": "#000000",
-            "stroke_size": 3,
-            "style": "Regular",
-            "text": "",
-            "underline": false
-          }
-        ],
-        "supported_in_multi_actions": true,
-        "tooltip": "",
-        "uuid": "st.lynx.plugins.darktable.adjust",
-        "visible_in_action_list": true
-      },
-      "children": null,
-      "context": "Keypad.4.0",
-      "current_state": 0,
-      "settings": {
-        "path": "iop/exposure/exposure",
-        "step": -1.0
-      },
-      "states": [
-        {
-          "alignment": "middle",
-          "background_colour": "#000000",
-          "colour": "#FFFFFF",
-          "family": "Liberation Sans",
-          "image": "plugins/st.lynx.plugins.darktable.sdPlugin/assets/icon.png",
-          "name": "",
-          "show": true,
-          "size": 16,
-          "stroke_colour": "#000000",
-          "stroke_size": 3,
-          "style": "Regular",
-          "text": "EXP-",
-          "underline": false
-        }
-      ]
-    },
-    {
-      "action": {
-        "controllers": [
-          "Keypad",
-          "Encoder"
-        ],
-        "disable_automatic_states": false,
-        "icon": "plugins/st.lynx.plugins.darktable.sdPlugin/assets/icon.png",
-        "name": "Darktable Adjust",
-        "plugin": "st.lynx.plugins.darktable.sdPlugin",
-        "property_inspector": "plugins/st.lynx.plugins.darktable.sdPlugin/pi.html",
-        "states": [
-          {
-            "alignment": "middle",
-            "background_colour": "#000000",
-            "colour": "#FFFFFF",
-            "family": "Liberation Sans",
-            "image": "plugins/st.lynx.plugins.darktable.sdPlugin/assets/icon.png",
-            "name": "",
-            "show": true,
-            "size": 16,
-            "stroke_colour": "#000000",
-            "stroke_size": 3,
-            "style": "Regular",
-            "text": "",
-            "underline": false
-          }
-        ],
-        "supported_in_multi_actions": true,
-        "tooltip": "",
-        "uuid": "st.lynx.plugins.darktable.adjust",
-        "visible_in_action_list": true
-      },
-      "children": null,
-      "context": "Keypad.5.0",
-      "current_state": 0,
-      "settings": {
-        "path": "iop/filmicrgb/contrast",
-        "step": -1.0
-      },
-      "states": [
-        {
-          "alignment": "middle",
-          "background_colour": "#000000",
-          "colour": "#FFFFFF",
-          "family": "Liberation Sans",
-          "image": "plugins/st.lynx.plugins.darktable.sdPlugin/assets/icon.png",
-          "name": "",
-          "show": true,
-          "size": 16,
-          "stroke_colour": "#000000",
-          "stroke_size": 3,
-          "style": "Regular",
-          "text": "CON-",
-          "underline": false
-        }
-      ]
-    },
-    {
-      "action": {
-        "controllers": [
-          "Keypad",
-          "Encoder"
-        ],
-        "disable_automatic_states": false,
-        "icon": "plugins/st.lynx.plugins.darktable.sdPlugin/assets/icon.png",
-        "name": "Darktable Adjust",
-        "plugin": "st.lynx.plugins.darktable.sdPlugin",
-        "property_inspector": "plugins/st.lynx.plugins.darktable.sdPlugin/pi.html",
-        "states": [
-          {
-            "alignment": "middle",
-            "background_colour": "#000000",
-            "colour": "#FFFFFF",
-            "family": "Liberation Sans",
-            "image": "plugins/st.lynx.plugins.darktable.sdPlugin/assets/icon.png",
-            "name": "",
-            "show": true,
-            "size": 16,
-            "stroke_colour": "#000000",
-            "stroke_size": 3,
-            "style": "Regular",
-            "text": "",
-            "underline": false
-          }
-        ],
-        "supported_in_multi_actions": true,
-        "tooltip": "",
-        "uuid": "st.lynx.plugins.darktable.adjust",
-        "visible_in_action_list": true
-      },
-      "children": null,
-      "context": "Keypad.6.0",
-      "current_state": 0,
-      "settings": {
-        "path": "iop/ashift/rotation",
-        "step": -1.0
-      },
-      "states": [
-        {
-          "alignment": "middle",
-          "background_colour": "#000000",
-          "colour": "#FFFFFF",
-          "family": "Liberation Sans",
-          "image": "plugins/st.lynx.plugins.darktable.sdPlugin/assets/icon.png",
-          "name": "",
-          "show": true,
-          "size": 16,
-          "stroke_colour": "#000000",
-          "stroke_size": 3,
-          "style": "Regular",
-          "text": "ROT-",
-          "underline": false
-        }
-      ]
-    },
-    {
-      "action": {
-        "controllers": [
-          "Keypad",
-          "Encoder"
-        ],
-        "disable_automatic_states": false,
-        "icon": "plugins/st.lynx.plugins.darktable.sdPlugin/assets/icon.png",
-        "name": "Darktable Adjust",
-        "plugin": "st.lynx.plugins.darktable.sdPlugin",
-        "property_inspector": "plugins/st.lynx.plugins.darktable.sdPlugin/pi.html",
-        "states": [
-          {
-            "alignment": "middle",
-            "background_colour": "#000000",
-            "colour": "#FFFFFF",
-            "family": "Liberation Sans",
-            "image": "plugins/st.lynx.plugins.darktable.sdPlugin/assets/icon.png",
-            "name": "",
-            "show": true,
-            "size": 16,
-            "stroke_colour": "#000000",
-            "stroke_size": 3,
-            "style": "Regular",
-            "text": "",
-            "underline": false
-          }
-        ],
-        "supported_in_multi_actions": true,
-        "tooltip": "",
-        "uuid": "st.lynx.plugins.darktable.switchview",
-        "visible_in_action_list": true
-      },
-      "children": null,
-      "context": "Keypad.7.0",
-      "current_state": 0,
-      "settings": {},
-      "states": [
-        {
-          "alignment": "middle",
-          "background_colour": "#000000",
-          "colour": "#FFFFFF",
-          "family": "Liberation Sans",
-          "image": "plugins/st.lynx.plugins.darktable.sdPlugin/assets/icon.png",
-          "name": "",
-          "show": true,
-          "size": 16,
-          "stroke_colour": "#000000",
-          "stroke_size": 3,
-          "style": "Regular",
-          "text": "DROOM",
+          "text": "FULL",
           "underline": false
         }
       ]
@@ -464,9 +63,9 @@
         ],
         "disable_automatic_states": false,
         "icon": "plugins/st.lynx.plugins.darktable.sdPlugin/assets/icon.png",
-        "name": "Switch View",
+        "name": "Darktable Toggle",
         "plugin": "st.lynx.plugins.darktable.sdPlugin",
-        "property_inspector": "",
+        "property_inspector": "plugins/st.lynx.plugins.darktable.sdPlugin/pi.html",
         "states": [
           {
             "alignment": "middle",
@@ -486,13 +85,15 @@
         ],
         "supported_in_multi_actions": true,
         "tooltip": "",
-        "uuid": "st.lynx.plugins.darktable.switchview",
+        "uuid": "st.lynx.plugins.darktable.toggle",
         "visible_in_action_list": true
       },
       "children": null,
-      "context": "Keypad.8.0",
+      "context": "Keypad.1.0",
       "current_state": 0,
-      "settings": {},
+      "settings": {
+        "path": "views/darkroom/overexposed/toggle"
+      },
       "states": [
         {
           "alignment": "middle",
@@ -506,7 +107,399 @@
           "stroke_colour": "#000000",
           "stroke_size": 3,
           "style": "Regular",
-          "text": "LROOM",
+          "text": "OVER",
+          "underline": false
+        }
+      ]
+    },
+    {
+      "action": {
+        "controllers": [
+          "Keypad"
+        ],
+        "disable_automatic_states": false,
+        "icon": "plugins/st.lynx.plugins.darktable.sdPlugin/assets/icon.png",
+        "name": "Darktable Toggle",
+        "plugin": "st.lynx.plugins.darktable.sdPlugin",
+        "property_inspector": "plugins/st.lynx.plugins.darktable.sdPlugin/pi.html",
+        "states": [
+          {
+            "alignment": "middle",
+            "background_colour": "#000000",
+            "colour": "#FFFFFF",
+            "family": "Liberation Sans",
+            "image": "plugins/st.lynx.plugins.darktable.sdPlugin/assets/icon.png",
+            "name": "",
+            "show": true,
+            "size": 16,
+            "stroke_colour": "#000000",
+            "stroke_size": 3,
+            "style": "Regular",
+            "text": "",
+            "underline": false
+          }
+        ],
+        "supported_in_multi_actions": true,
+        "tooltip": "",
+        "uuid": "st.lynx.plugins.darktable.toggle",
+        "visible_in_action_list": true
+      },
+      "children": null,
+      "context": "Keypad.2.0",
+      "current_state": 0,
+      "settings": {
+        "path": "views/darkroom/raw overexposed/toggle"
+      },
+      "states": [
+        {
+          "alignment": "middle",
+          "background_colour": "#000000",
+          "colour": "#FFFFFF",
+          "family": "Liberation Sans",
+          "image": "plugins/st.lynx.plugins.darktable.sdPlugin/assets/icon.png",
+          "name": "",
+          "show": true,
+          "size": 16,
+          "stroke_colour": "#000000",
+          "stroke_size": 3,
+          "style": "Regular",
+          "text": "RAW",
+          "underline": false
+        }
+      ]
+    },
+    {
+      "action": {
+        "controllers": [
+          "Keypad"
+        ],
+        "disable_automatic_states": false,
+        "icon": "plugins/st.lynx.plugins.darktable.sdPlugin/assets/icon.png",
+        "name": "Darktable Toggle",
+        "plugin": "st.lynx.plugins.darktable.sdPlugin",
+        "property_inspector": "plugins/st.lynx.plugins.darktable.sdPlugin/pi.html",
+        "states": [
+          {
+            "alignment": "middle",
+            "background_colour": "#000000",
+            "colour": "#FFFFFF",
+            "family": "Liberation Sans",
+            "image": "plugins/st.lynx.plugins.darktable.sdPlugin/assets/icon.png",
+            "name": "",
+            "show": true,
+            "size": 16,
+            "stroke_colour": "#000000",
+            "stroke_size": 3,
+            "style": "Regular",
+            "text": "",
+            "underline": false
+          }
+        ],
+        "supported_in_multi_actions": true,
+        "tooltip": "",
+        "uuid": "st.lynx.plugins.darktable.toggle",
+        "visible_in_action_list": true
+      },
+      "children": null,
+      "context": "Keypad.3.0",
+      "current_state": 0,
+      "settings": {
+        "path": "views/darkroom/gamut check"
+      },
+      "states": [
+        {
+          "alignment": "middle",
+          "background_colour": "#000000",
+          "colour": "#FFFFFF",
+          "family": "Liberation Sans",
+          "image": "plugins/st.lynx.plugins.darktable.sdPlugin/assets/icon.png",
+          "name": "",
+          "show": true,
+          "size": 16,
+          "stroke_colour": "#000000",
+          "stroke_size": 3,
+          "style": "Regular",
+          "text": "GAMUT",
+          "underline": false
+        }
+      ]
+    },
+    {
+      "action": {
+        "controllers": [
+          "Keypad"
+        ],
+        "disable_automatic_states": false,
+        "icon": "plugins/st.lynx.plugins.darktable.sdPlugin/assets/icon.png",
+        "name": "Darktable Toggle",
+        "plugin": "st.lynx.plugins.darktable.sdPlugin",
+        "property_inspector": "plugins/st.lynx.plugins.darktable.sdPlugin/pi.html",
+        "states": [
+          {
+            "alignment": "middle",
+            "background_colour": "#000000",
+            "colour": "#FFFFFF",
+            "family": "Liberation Sans",
+            "image": "plugins/st.lynx.plugins.darktable.sdPlugin/assets/icon.png",
+            "name": "",
+            "show": true,
+            "size": 16,
+            "stroke_colour": "#000000",
+            "stroke_size": 3,
+            "style": "Regular",
+            "text": "",
+            "underline": false
+          }
+        ],
+        "supported_in_multi_actions": true,
+        "tooltip": "",
+        "uuid": "st.lynx.plugins.darktable.toggle",
+        "visible_in_action_list": true
+      },
+      "children": null,
+      "context": "Keypad.4.0",
+      "current_state": 0,
+      "settings": {
+        "path": "views/darkroom/softproof"
+      },
+      "states": [
+        {
+          "alignment": "middle",
+          "background_colour": "#000000",
+          "colour": "#FFFFFF",
+          "family": "Liberation Sans",
+          "image": "plugins/st.lynx.plugins.darktable.sdPlugin/assets/icon.png",
+          "name": "",
+          "show": true,
+          "size": 16,
+          "stroke_colour": "#000000",
+          "stroke_size": 3,
+          "style": "Regular",
+          "text": "PROOF",
+          "underline": false
+        }
+      ]
+    },
+    {
+      "action": {
+        "controllers": [
+          "Keypad"
+        ],
+        "disable_automatic_states": false,
+        "icon": "plugins/st.lynx.plugins.darktable.sdPlugin/assets/icon.png",
+        "name": "Darktable Toggle",
+        "plugin": "st.lynx.plugins.darktable.sdPlugin",
+        "property_inspector": "plugins/st.lynx.plugins.darktable.sdPlugin/pi.html",
+        "states": [
+          {
+            "alignment": "middle",
+            "background_colour": "#000000",
+            "colour": "#FFFFFF",
+            "family": "Liberation Sans",
+            "image": "plugins/st.lynx.plugins.darktable.sdPlugin/assets/icon.png",
+            "name": "",
+            "show": true,
+            "size": 16,
+            "stroke_colour": "#000000",
+            "stroke_size": 3,
+            "style": "Regular",
+            "text": "",
+            "underline": false
+          }
+        ],
+        "supported_in_multi_actions": true,
+        "tooltip": "",
+        "uuid": "st.lynx.plugins.darktable.toggle",
+        "visible_in_action_list": true
+      },
+      "children": null,
+      "context": "Keypad.5.0",
+      "current_state": 0,
+      "settings": {
+        "path": "views/darkroom/full preview"
+      },
+      "states": [
+        {
+          "alignment": "middle",
+          "background_colour": "#000000",
+          "colour": "#FFFFFF",
+          "family": "Liberation Sans",
+          "image": "plugins/st.lynx.plugins.darktable.sdPlugin/assets/icon.png",
+          "name": "",
+          "show": true,
+          "size": 16,
+          "stroke_colour": "#000000",
+          "stroke_size": 3,
+          "style": "Regular",
+          "text": "PREV",
+          "underline": false
+        }
+      ]
+    },
+    {
+      "action": {
+        "controllers": [
+          "Keypad"
+        ],
+        "disable_automatic_states": false,
+        "icon": "plugins/st.lynx.plugins.darktable.sdPlugin/assets/icon.png",
+        "name": "Darktable Toggle",
+        "plugin": "st.lynx.plugins.darktable.sdPlugin",
+        "property_inspector": "plugins/st.lynx.plugins.darktable.sdPlugin/pi.html",
+        "states": [
+          {
+            "alignment": "middle",
+            "background_colour": "#000000",
+            "colour": "#FFFFFF",
+            "family": "Liberation Sans",
+            "image": "plugins/st.lynx.plugins.darktable.sdPlugin/assets/icon.png",
+            "name": "",
+            "show": true,
+            "size": 16,
+            "stroke_colour": "#000000",
+            "stroke_size": 3,
+            "style": "Regular",
+            "text": "",
+            "underline": false
+          }
+        ],
+        "supported_in_multi_actions": true,
+        "tooltip": "",
+        "uuid": "st.lynx.plugins.darktable.toggle",
+        "visible_in_action_list": true
+      },
+      "children": null,
+      "context": "Keypad.6.0",
+      "current_state": 0,
+      "settings": {
+        "path": "views/darkroom/guide lines/toggle"
+      },
+      "states": [
+        {
+          "alignment": "middle",
+          "background_colour": "#000000",
+          "colour": "#FFFFFF",
+          "family": "Liberation Sans",
+          "image": "plugins/st.lynx.plugins.darktable.sdPlugin/assets/icon.png",
+          "name": "",
+          "show": true,
+          "size": 16,
+          "stroke_colour": "#000000",
+          "stroke_size": 3,
+          "style": "Regular",
+          "text": "GRID",
+          "underline": false
+        }
+      ]
+    },
+    {
+      "action": {
+        "controllers": [
+          "Keypad"
+        ],
+        "disable_automatic_states": false,
+        "icon": "plugins/st.lynx.plugins.darktable.sdPlugin/assets/icon.png",
+        "name": "Darktable Toggle",
+        "plugin": "st.lynx.plugins.darktable.sdPlugin",
+        "property_inspector": "plugins/st.lynx.plugins.darktable.sdPlugin/pi.html",
+        "states": [
+          {
+            "alignment": "middle",
+            "background_colour": "#000000",
+            "colour": "#FFFFFF",
+            "family": "Liberation Sans",
+            "image": "plugins/st.lynx.plugins.darktable.sdPlugin/assets/icon.png",
+            "name": "",
+            "show": true,
+            "size": 16,
+            "stroke_colour": "#000000",
+            "stroke_size": 3,
+            "style": "Regular",
+            "text": "",
+            "underline": false
+          }
+        ],
+        "supported_in_multi_actions": true,
+        "tooltip": "",
+        "uuid": "st.lynx.plugins.darktable.toggle",
+        "visible_in_action_list": true
+      },
+      "children": null,
+      "context": "Keypad.7.0",
+      "current_state": 0,
+      "settings": {
+        "path": "global/panels/all"
+      },
+      "states": [
+        {
+          "alignment": "middle",
+          "background_colour": "#000000",
+          "colour": "#FFFFFF",
+          "family": "Liberation Sans",
+          "image": "plugins/st.lynx.plugins.darktable.sdPlugin/assets/icon.png",
+          "name": "",
+          "show": true,
+          "size": 16,
+          "stroke_colour": "#000000",
+          "stroke_size": 3,
+          "style": "Regular",
+          "text": "UI",
+          "underline": false
+        }
+      ]
+    },
+    {
+      "action": {
+        "controllers": [
+          "Keypad"
+        ],
+        "disable_automatic_states": false,
+        "icon": "plugins/st.lynx.plugins.darktable.sdPlugin/assets/icon.png",
+        "name": "Darktable Toggle",
+        "plugin": "st.lynx.plugins.darktable.sdPlugin",
+        "property_inspector": "plugins/st.lynx.plugins.darktable.sdPlugin/pi.html",
+        "states": [
+          {
+            "alignment": "middle",
+            "background_colour": "#000000",
+            "colour": "#FFFFFF",
+            "family": "Liberation Sans",
+            "image": "plugins/st.lynx.plugins.darktable.sdPlugin/assets/icon.png",
+            "name": "",
+            "show": true,
+            "size": 16,
+            "stroke_colour": "#000000",
+            "stroke_size": 3,
+            "style": "Regular",
+            "text": "",
+            "underline": false
+          }
+        ],
+        "supported_in_multi_actions": true,
+        "tooltip": "",
+        "uuid": "st.lynx.plugins.darktable.toggle",
+        "visible_in_action_list": true
+      },
+      "children": null,
+      "context": "Keypad.8.0",
+      "current_state": 0,
+      "settings": {
+        "path": "global/toggle focus peaking"
+      },
+      "states": [
+        {
+          "alignment": "middle",
+          "background_colour": "#000000",
+          "colour": "#FFFFFF",
+          "family": "Liberation Sans",
+          "image": "plugins/st.lynx.plugins.darktable.sdPlugin/assets/icon.png",
+          "name": "",
+          "show": true,
+          "size": 16,
+          "stroke_colour": "#000000",
+          "stroke_size": 3,
+          "style": "Regular",
+          "text": "PEAK",
           "underline": false
         }
       ]
@@ -608,7 +601,7 @@
       "context": "Encoder.1.0",
       "current_state": 0,
       "settings": {
-        "path": "iop/filmicrgb/contrast",
+        "path": "__selected__",
         "step": 1.0
       },
       "states": [
@@ -624,7 +617,7 @@
           "stroke_colour": "#000000",
           "stroke_size": 3,
           "style": "Regular",
-          "text": "CONT",
+          "text": "ACTIVE",
           "underline": false
         }
       ]
@@ -666,7 +659,7 @@
       "context": "Encoder.2.0",
       "current_state": 0,
       "settings": {
-        "path": "iop/ashift/rotation",
+        "path": "iop/filmicrgb/contrast",
         "step": 1.0
       },
       "states": [
@@ -682,7 +675,7 @@
           "stroke_colour": "#000000",
           "stroke_size": 3,
           "style": "Regular",
-          "text": "ROT",
+          "text": "CONT",
           "underline": false
         }
       ]
