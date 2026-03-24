@@ -1,3 +1,7 @@
+# OpenDeck AKP03 (Soomfon SE Fork)
+
+This is a fork of [4ndv/opendeck-akp03](https://github.com/4ndv/opendeck-akp03) specifically patched for the Soomfon SE hardware.
+
 # OpenDeck AKP03 - Soomfon SE Patched
 
 This is a modified version of the AKP03 plugin for OpenDeck, specifically patched to support the **Soomfon SE** (HID 1500:3001) physical knobs and buttons.
