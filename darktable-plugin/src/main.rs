@@ -67,6 +67,31 @@ fn normalize_toggle_path(path: &str) -> &str {
     normalized.strip_suffix("/toggle").unwrap_or(normalized)
 }
 
+fn lua_adjust_call(path: &str, effect: &str, speed: i32) -> String {
+    if path.is_empty() {
+        format!(
+            "local ok = pcall(function() return darktable.gui.action('', '{}', {}) end); \
+             if not ok then darktable.gui.action('', '', '{}', {}); end;",
+            effect, speed, effect, speed
+        )
+    } else {
+        format!(
+            "darktable.gui.action('{}', '', '{}', {});",
+            path, effect, speed
+        )
+    }
+}
+
+fn lua_reset_call(path: &str) -> String {
+    if path.is_empty() {
+        "local ok = pcall(function() return darktable.gui.action('', 'reset', 1) end); \
+         if not ok then darktable.gui.action('', '', 'reset'); end;"
+            .to_string()
+    } else {
+        format!("darktable.gui.action('{}', '', 'reset');", path)
+    }
+}
+
 fn lua_bootstrap() -> &'static str {
     "local darktable = require 'darktable'; \
      local function ensure_darkroom() \
@@ -89,6 +114,42 @@ fn run_host_check(args: &[&str]) -> Result<(), String> {
     } else {
         Err(String::from_utf8_lossy(&out.stderr).trim().to_string())
     }
+}
+
+fn send_host_scroll(effect: &str, speed: i32) -> Result<&'static str, String> {
+    let button = if effect == "up" { "4" } else { "5" };
+    let mut errs = Vec::new();
+
+    for tool in ["xdotool", "ydotool"] {
+        let mut ok = true;
+        for _ in 0..speed.max(1) {
+            let out = Command::new("flatpak-spawn")
+                .args(["--host", tool, "click", button])
+                .output()
+                .map_err(|e| e.to_string());
+            match out {
+                Ok(out) if out.status.success() => {}
+                Ok(out) => {
+                    ok = false;
+                    errs.push(format!(
+                        "{tool}: {}",
+                        String::from_utf8_lossy(&out.stderr).trim()
+                    ));
+                    break;
+                }
+                Err(err) => {
+                    ok = false;
+                    errs.push(format!("{tool}: {err}"));
+                    break;
+                }
+            }
+        }
+        if ok {
+            return Ok(tool);
+        }
+    }
+
+    Err(errs.join(" | "))
 }
 
 fn send_lua(cmd: &str) -> Result<String, LuaDispatchError> {
@@ -227,21 +288,23 @@ impl ActionEventHandler for DarktablePlugin {
                 let needs_darkroom = path.is_empty() || path.starts_with("iop/");
                 if event.payload.controller == "Encoder" {
                     log::info!("key_down encoder-reset path={} context={}", settings.path, event.context);
+                    let reset = lua_reset_call(&path);
                     let lua = format!(
-                        "{} {} darktable.gui.action('{}', '', 'reset'); return darktable.gui.current_view().id",
+                        "{} {} {} return darktable.gui.current_view().id",
                         lua_bootstrap(),
                         if needs_darkroom { "ensure_darkroom();" } else { "" },
-                        path
+                        reset
                     );
                     let _ = self.dispatch_lua("adjust-reset", &event.context, lua).await;
                 } else {
                     if settings.step == 0.0 {
                         log::info!("key_down keypad-reset path={} context={}", settings.path, event.context);
+                        let reset = lua_reset_call(&path);
                         let lua = format!(
-                            "{} {} darktable.gui.action('{}', '', 'reset'); return darktable.gui.current_view().id",
+                            "{} {} {} return darktable.gui.current_view().id",
                             lua_bootstrap(),
                             if needs_darkroom { "ensure_darkroom();" } else { "" },
-                            path
+                            reset
                         );
                         let _ = self.dispatch_lua("adjust-reset", &event.context, lua).await;
                         return Ok(());
@@ -249,6 +312,7 @@ impl ActionEventHandler for DarktablePlugin {
 
                     let effect = if settings.step >= 0.0 { "up" } else { "down" };
                     let speed = settings.step.abs().round().max(1.0) as i32;
+                    let adjust = lua_adjust_call(&path, effect, speed);
                     log::info!(
                         "key_down keypad-adjust path={} effect={} speed={} context={}",
                         settings.path,
@@ -257,12 +321,10 @@ impl ActionEventHandler for DarktablePlugin {
                         event.context
                     );
                     let lua = format!(
-                        "{} {} darktable.gui.action('{}', '', '{}', {}); return darktable.gui.current_view().id",
+                        "{} {} {} return darktable.gui.current_view().id",
                         lua_bootstrap(),
                         if needs_darkroom { "ensure_darkroom();" } else { "" },
-                        path,
-                        effect,
-                        speed
+                        adjust
                     );
                     let _ = self.dispatch_lua("adjust-step", &event.context, lua).await;
                 }
@@ -277,12 +339,13 @@ impl ActionEventHandler for DarktablePlugin {
             let settings: AdjustSettings = serde_json::from_value(event.payload.settings).unwrap_or_default();
             let path = escape_lua_str(normalize_action_path(&settings.path));
             let needs_darkroom = path.is_empty() || path.starts_with("iop/");
+            let reset = lua_reset_call(&path);
             log::info!("dial_down reset path={} context={}", settings.path, event.context);
             let lua = format!(
-                "{} {} darktable.gui.action('{}', '', 'reset'); return darktable.gui.current_view().id",
+                "{} {} {} return darktable.gui.current_view().id",
                 lua_bootstrap(),
                 if needs_darkroom { "ensure_darkroom();" } else { "" },
-                path
+                reset
             );
             let _ = self.dispatch_lua("dial-reset", &event.context, lua).await;
         }
@@ -299,6 +362,31 @@ impl ActionEventHandler for DarktablePlugin {
                 let speed = movement.abs();
                 let path = escape_lua_str(normalize_action_path(&settings.path));
                 let needs_darkroom = path.is_empty() || path.starts_with("iop/");
+                if path.is_empty() {
+                    match send_host_scroll(effect, speed) {
+                        Ok(tool) => {
+                            log::info!(
+                                "dial_rotate selected-scroll tool={} effect={} speed={} context={} ticks={}",
+                                tool,
+                                effect,
+                                speed,
+                                event.context,
+                                event.payload.ticks
+                            );
+                        }
+                        Err(err) => {
+                            log::error!(
+                                "dial_rotate selected-scroll failed effect={} speed={} context={}: {}",
+                                effect,
+                                speed,
+                                event.context,
+                                err
+                            );
+                        }
+                    }
+                    return Ok(());
+                }
+                let adjust = lua_adjust_call(&path, effect, speed);
                 log::info!(
                     "dial_rotate path={} effect={} speed={} context={} ticks={}",
                     settings.path,
@@ -308,12 +396,10 @@ impl ActionEventHandler for DarktablePlugin {
                     event.payload.ticks
                 );
                 let lua = format!(
-                    "{} {} darktable.gui.action('{}', '', '{}', {}); return darktable.gui.current_view().id",
+                    "{} {} {} return darktable.gui.current_view().id",
                     lua_bootstrap(),
                     if needs_darkroom { "ensure_darkroom();" } else { "" },
-                    path,
-                    effect,
-                    speed
+                    adjust
                 );
                 let _ = self.dispatch_lua("dial-rotate", &event.context, lua).await;
             }
